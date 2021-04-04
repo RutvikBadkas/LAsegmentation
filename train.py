@@ -48,7 +48,7 @@ mask_dataset = []  #Place holders to define add labels. We will add 0 to all par
 images = os.listdir(image_directory)
 for i, folder_name in enumerate(images):    #Remember enumerate method adds a counter and returns the enumerate object
     if folder_name == 'data_readme.txt':
-        break
+        continue
     path= image_directory + folder_name
     image_name = '/image.mhd'
     mask_name = '/gt_binary.mhd'
@@ -81,8 +81,15 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
     # image = image.resize((SIZE, SIZE))
 
     for i in range(shape[0]):
+    	
+        
         temp_image = image1[i,80:240,80:240]
         temp_mask = mask1[i,80:240,80:240]
+
+        maxElement4 = np.amax(temp_mask)
+        if maxElement4 ==0:
+        	continue
+
         image_dataset.append(np.array(temp_image))
         mask_dataset.append(np.array(temp_mask))
         # print(len(mask_dataset))
@@ -150,8 +157,8 @@ plt.subplot(122)
 plt.imshow(np.reshape(y_train[image_number], (160, 160)), cmap='gray')
 plt.show()
 
-import sys
-sys.exit(os.EX_OK)
+# import sys
+# sys.exit(os.EX_OK)
 ###############################################################
 IMG_HEIGHT = image_dataset.shape[1]
 IMG_WIDTH  = image_dataset.shape[2]
@@ -222,7 +229,7 @@ print("IoU socre is: ", iou_score)
 #######################################################################
 #Predict on a few images
 model = get_model()
-model.load_weights('test_epoch_10_data_10.hdf5') #Trained for 50 epochs and then additional 100
+model.load_weights('mitochondria_test_40img_100epoch.hdf5') #Trained for 50 epochs and then additional 100
 #model.load_weights('mitochondria_gpu_tf1.4.hdf5')  #Trained for 50 epochs
 
 test_img_number = random.randint(0, len(X_test)-1)#========================== added the -1 cuz it was giving out of range errors for some reason

@@ -77,6 +77,11 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
     for i in range(shape[0]):
         temp_image = image1[i,80:240,80:240]
         temp_mask = mask1[i,80:240,80:240]
+
+        maxElement4 = np.amax(temp_mask)
+        if maxElement4 ==0:
+            continue
+        
         image_dataset.append(np.array(temp_image))
         mask_dataset.append(np.array(temp_mask))
         # print(len(mask_dataset))

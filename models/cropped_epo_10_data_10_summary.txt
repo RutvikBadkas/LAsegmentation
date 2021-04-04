@@ -1,0 +1,189 @@
+PS C:\Users\Rutvik\Desktop\FYP\Tutorial\LAsegmentation> python .\train.py
+2021-04-04 17:03:49.602027: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2021-04-04 17:03:49.609323: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+1852.0
+255.0
+image: (100, 320, 320)
+mask: (100, 320, 320)
+1901.0
+255.0
+image: (110, 320, 320)
+mask: (110, 320, 320)
+1999.0
+255.0
+image: (110, 320, 320)
+mask: (110, 320, 320)
+2060.0
+255.0
+image: (120, 320, 320)
+mask: (120, 320, 320)
+2128.0
+255.0
+image: (120, 320, 320)
+mask: (120, 320, 320)
+1888.0
+255.0
+image: (120, 320, 320)
+mask: (120, 320, 320)
+1860.0
+255.0
+image: (100, 320, 320)
+mask: (100, 320, 320)
+2045.0
+255.0
+image: (110, 320, 320)
+mask: (110, 320, 320)
+2196.0
+255.0
+image: (109, 320, 320)
+mask: (109, 320, 320)
+2045.0
+255.0
+image: (110, 320, 320)
+mask: (110, 320, 320)
+2021-04-04 17:04:05.483738: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2021-04-04 17:04:05.616165: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library nvcuda.dll
+2021-04-04 17:04:05.830036: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 0 with properties:
+pciBusID: 0000:01:00.0 name: GeForce GTX 850M computeCapability: 5.0
+coreClock: 0.9015GHz coreCount: 5 deviceMemorySize: 4.00GiB deviceMemoryBandwidth: 29.83GiB/s
+2021-04-04 17:04:05.847732: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2021-04-04 17:04:05.862536: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cublas64_11.dll'; dlerror: cublas64_11.dll not found
+2021-04-04 17:04:05.875905: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cublasLt64_11.dll'; dlerror: cublasLt64_11.dll not found
+2021-04-04 17:04:05.891256: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cufft64_10.dll'; dlerror: cufft64_10.dll not found
+2021-04-04 17:04:05.906308: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'curand64_10.dll'; dlerror: curand64_10.dll not found
+2021-04-04 17:04:05.921379: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cusolver64_10.dll'; dlerror: cusolver64_10.dll not found
+2021-04-04 17:04:05.936035: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cusparse64_11.dll'; dlerror: cusparse64_11.dll not found
+2021-04-04 17:04:05.952851: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cudnn64_8.dll'; dlerror: cudnn64_8.dll not found
+2021-04-04 17:04:05.962056: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1757] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+2021-04-04 17:04:05.978507: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2021-04-04 17:04:05.991991: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1261] Device interconnect StreamExecutor with strength 1 edge matrix:
+2021-04-04 17:04:05.997410: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1267]
+2021-04-04 17:04:06.001726: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+1
+2
+3
+Model: "model"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to
+==================================================================================================
+input_1 (InputLayer)            [(None, 160, 160, 1) 0
+__________________________________________________________________________________________________
+conv2d (Conv2D)                 (None, 160, 160, 16) 160         input_1[0][0]
+__________________________________________________________________________________________________
+dropout (Dropout)               (None, 160, 160, 16) 0           conv2d[0][0]
+__________________________________________________________________________________________________
+conv2d_1 (Conv2D)               (None, 160, 160, 16) 2320        dropout[0][0]
+__________________________________________________________________________________________________
+max_pooling2d (MaxPooling2D)    (None, 80, 80, 16)   0           conv2d_1[0][0]
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, 80, 80, 32)   4640        max_pooling2d[0][0]
+__________________________________________________________________________________________________
+dropout_1 (Dropout)             (None, 80, 80, 32)   0           conv2d_2[0][0]
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, 80, 80, 32)   9248        dropout_1[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_1 (MaxPooling2D)  (None, 40, 40, 32)   0           conv2d_3[0][0]
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, 40, 40, 64)   18496       max_pooling2d_1[0][0]
+__________________________________________________________________________________________________
+dropout_2 (Dropout)             (None, 40, 40, 64)   0           conv2d_4[0][0]
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, 40, 40, 64)   36928       dropout_2[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_2 (MaxPooling2D)  (None, 20, 20, 64)   0           conv2d_5[0][0]
+__________________________________________________________________________________________________
+conv2d_6 (Conv2D)               (None, 20, 20, 128)  73856       max_pooling2d_2[0][0]
+__________________________________________________________________________________________________
+dropout_3 (Dropout)             (None, 20, 20, 128)  0           conv2d_6[0][0]
+__________________________________________________________________________________________________
+conv2d_7 (Conv2D)               (None, 20, 20, 128)  147584      dropout_3[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_3 (MaxPooling2D)  (None, 10, 10, 128)  0           conv2d_7[0][0]
+__________________________________________________________________________________________________
+conv2d_8 (Conv2D)               (None, 10, 10, 256)  295168      max_pooling2d_3[0][0]
+__________________________________________________________________________________________________
+dropout_4 (Dropout)             (None, 10, 10, 256)  0           conv2d_8[0][0]
+__________________________________________________________________________________________________
+conv2d_9 (Conv2D)               (None, 10, 10, 256)  590080      dropout_4[0][0]
+__________________________________________________________________________________________________
+conv2d_transpose (Conv2DTranspo (None, 20, 20, 128)  131200      conv2d_9[0][0]
+__________________________________________________________________________________________________
+concatenate (Concatenate)       (None, 20, 20, 256)  0           conv2d_transpose[0][0]
+                                                                 conv2d_7[0][0]
+__________________________________________________________________________________________________
+conv2d_10 (Conv2D)              (None, 20, 20, 128)  295040      concatenate[0][0]
+__________________________________________________________________________________________________
+dropout_5 (Dropout)             (None, 20, 20, 128)  0           conv2d_10[0][0]
+__________________________________________________________________________________________________
+conv2d_11 (Conv2D)              (None, 20, 20, 128)  147584      dropout_5[0][0]
+__________________________________________________________________________________________________
+conv2d_transpose_1 (Conv2DTrans (None, 40, 40, 64)   32832       conv2d_11[0][0]
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 40, 40, 128)  0           conv2d_transpose_1[0][0]
+                                                                 conv2d_5[0][0]
+__________________________________________________________________________________________________
+conv2d_12 (Conv2D)              (None, 40, 40, 64)   73792       concatenate_1[0][0]
+__________________________________________________________________________________________________
+dropout_6 (Dropout)             (None, 40, 40, 64)   0           conv2d_12[0][0]
+__________________________________________________________________________________________________
+conv2d_13 (Conv2D)              (None, 40, 40, 64)   36928       dropout_6[0][0]
+__________________________________________________________________________________________________
+conv2d_transpose_2 (Conv2DTrans (None, 80, 80, 32)   8224        conv2d_13[0][0]
+__________________________________________________________________________________________________
+concatenate_2 (Concatenate)     (None, 80, 80, 64)   0           conv2d_transpose_2[0][0]
+                                                                 conv2d_3[0][0]
+__________________________________________________________________________________________________
+conv2d_14 (Conv2D)              (None, 80, 80, 32)   18464       concatenate_2[0][0]
+__________________________________________________________________________________________________
+dropout_7 (Dropout)             (None, 80, 80, 32)   0           conv2d_14[0][0]
+__________________________________________________________________________________________________
+conv2d_15 (Conv2D)              (None, 80, 80, 32)   9248        dropout_7[0][0]
+__________________________________________________________________________________________________
+conv2d_transpose_3 (Conv2DTrans (None, 160, 160, 16) 2064        conv2d_15[0][0]
+__________________________________________________________________________________________________
+concatenate_3 (Concatenate)     (None, 160, 160, 32) 0           conv2d_transpose_3[0][0]
+                                                                 conv2d_1[0][0]
+__________________________________________________________________________________________________
+conv2d_16 (Conv2D)              (None, 160, 160, 16) 4624        concatenate_3[0][0]
+__________________________________________________________________________________________________
+dropout_8 (Dropout)             (None, 160, 160, 16) 0           conv2d_16[0][0]
+__________________________________________________________________________________________________
+conv2d_17 (Conv2D)              (None, 160, 160, 16) 2320        dropout_8[0][0]
+__________________________________________________________________________________________________
+conv2d_18 (Conv2D)              (None, 160, 160, 1)  17          conv2d_17[0][0]
+==================================================================================================
+Total params: 1,940,817
+Trainable params: 1,940,817
+Non-trainable params: 0
+__________________________________________________________________________________________________
+2021-04-04 17:04:06.626050: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:116] None of the MLIR optimization passes are enabled (registered 2)
+Epoch 1/10
+63/63 [==============================] - 190s 3s/step - loss: 0.1852 - accuracy: 0.9254 - val_loss: 0.0016 - val_accuracy: 0.9835
+Epoch 2/10
+63/63 [==============================] - 202s 3s/step - loss: 7.3739e-04 - accuracy: 0.9848 - val_loss: 0.0018 - val_accuracy: 0.9835
+Epoch 3/10
+63/63 [==============================] - 204s 3s/step - loss: 5.4589e-04 - accuracy: 0.9848 - val_loss: 0.0016 - val_accuracy: 0.9835
+Epoch 4/10
+63/63 [==============================] - 196s 3s/step - loss: 5.1342e-04 - accuracy: 0.9848 - val_loss: 0.0018 - val_accuracy: 0.9835
+Epoch 5/10
+63/63 [==============================] - 183s 3s/step - loss: 5.0354e-04 - accuracy: 0.9848 - val_loss: 0.0015 - val_accuracy: 0.9835
+Epoch 6/10
+63/63 [==============================] - 172s 3s/step - loss: 4.9293e-04 - accuracy: 0.9848 - val_loss: 0.0015 - val_accuracy: 0.9835
+Epoch 7/10
+63/63 [==============================] - 204s 3s/step - loss: 4.8941e-04 - accuracy: 0.9848 - val_loss: 0.0014 - val_accuracy: 0.9835
+Epoch 8/10
+63/63 [==============================] - 214s 3s/step - loss: 4.8114e-04 - accuracy: 0.9848 - val_loss: 0.0014 - val_accuracy: 0.9835
+Epoch 9/10
+63/63 [==============================] - 201s 3s/step - loss: 4.7876e-04 - accuracy: 0.9848 - val_loss: 0.0012 - val_accuracy: 0.9835
+Epoch 10/10
+63/63 [==============================] - 209s 3s/step - loss: 4.7595e-04 - accuracy: 0.9848 - val_loss: 0.0012 - val_accuracy: 0.9835
+4/4 [==============================] - 5s 1s/step - loss: 0.0012 - accuracy: 0.9835
+Accuracy =  98.35254549980164 %
+IoU socre is:  0.0
+1
+2
+3
+Model: "model_1"
+_
