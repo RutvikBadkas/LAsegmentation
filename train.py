@@ -33,7 +33,7 @@ mask_directory = 'data/left_atrium/'
 # tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
 
 # --------------------------------------------------------------------------------------------------------change
-SIZE = 320
+SIZE = 160
 image_dataset = []  #Many ways to handle data, you can use pandas. Here, we are using a list format.
 mask_dataset = []  #Place holders to define add labels. We will add 0 to all parasitized images and 1 to uninfected.
 
@@ -47,6 +47,8 @@ mask_dataset = []  #Place holders to define add labels. We will add 0 to all par
 
 images = os.listdir(image_directory)
 for i, folder_name in enumerate(images):    #Remember enumerate method adds a counter and returns the enumerate object
+    if folder_name == 'data_readme.txt':
+        break
     path= image_directory + folder_name
     image_name = '/image.mhd'
     mask_name = '/gt_binary.mhd'
@@ -79,8 +81,8 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
     # image = image.resize((SIZE, SIZE))
 
     for i in range(shape[0]):
-        temp_image = image1[i,:,:]
-        temp_mask = mask1[i,:,:]
+        temp_image = image1[i,80:240,80:240]
+        temp_mask = mask1[i,80:240,80:240]
         image_dataset.append(np.array(temp_image))
         mask_dataset.append(np.array(temp_mask))
         # print(len(mask_dataset))
@@ -141,13 +143,15 @@ plt.figure(figsize=(12, 6))
 plt.subplot(121)
 
 # --------------------------------------------------------------------------------------------------------change
-plt.imshow(np.reshape(X_train[image_number], (320, 320)), cmap='gray')
+plt.imshow(np.reshape(X_train[image_number], (160, 160)), cmap='gray')
 plt.subplot(122)
 
 # --------------------------------------------------------------------------------------------------------change
-plt.imshow(np.reshape(y_train[image_number], (320, 320)), cmap='gray')
+plt.imshow(np.reshape(y_train[image_number], (160, 160)), cmap='gray')
 plt.show()
 
+import sys
+sys.exit(os.EX_OK)
 ###############################################################
 IMG_HEIGHT = image_dataset.shape[1]
 IMG_WIDTH  = image_dataset.shape[2]
