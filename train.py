@@ -8,6 +8,7 @@ from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 from dataloader_mhd import load_itk
+from arraytesting import loaddataB
 from datetime import datetime
 from packaging import version
 import tensorflow as tf
@@ -35,11 +36,16 @@ mask_dataset = []  #Place holders to define add labels. We will add 0 to all par
 
 images = os.listdir(image_directory)
 for i, folder_name in enumerate(images):    #Remember enumerate method adds a counter and returns the enumerate object
+    
     if folder_name == 'data_readme.txt':
         continue
     path= image_directory + folder_name
     image_name = '/image.mhd'
-    mask_name = '/gt_binary.mhd'
+    
+    if folder_name.startswith('a'):
+    	mask_name = '/gt_binary.mhd'
+    else:
+    	mask_name = '/gt_std.mhd'
 
     image1, origin1, spacing1 = load_itk(path+image_name)
     maxElement1 = np.amax(image1)
@@ -59,7 +65,7 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
     
     mask1 = mask1.astype(np.uint8)
     image1 = image1.astype(np.uint8)
-
+    mask1 = (mask1 > 0)
     # maxElement2 = np.amax(mask1)
     # mask1 * 255/maxElement2
     # print(maxElement2)
@@ -83,6 +89,7 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
         # print(len(mask_dataset))
 # image_dataset = np.array(image_dataset)
 # print(image_dataset.shape)
+
 # --------------------------------------------------------------------------------------------------------change
 # images = os.listdir(image_directory)
 # for i, image_name in enumerate(images):    #Remember enumerate method adds a counter and returns the enumerate object
@@ -120,12 +127,11 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
 # mask_dataset * 255/maxElement2
 
 # --------------------------------------------------------------------------------------------------------change
-
 #Normalize images
 image_dataset = np.expand_dims(normalize(np.array(image_dataset), axis=1),3)
 #D not normalize masks, just rescale to 0 to 1.
 mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /255.
-
+print(image_dataset.shape)
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(image_dataset, mask_dataset, test_size = 0.10, random_state = 0)
@@ -164,11 +170,11 @@ model = get_model()
 history = model.fit(X_train, y_train,
                     batch_size = 16,
                     verbose=1,
-                    epochs=10,
+                    epochs=1,
                     validation_data=(X_test, y_test),
                     shuffle=False)
 
-model.save('test_epoch_10_data_10.hdf5')
+# model.save('test_epoch_10_data_10.hdf5')
 
 ############################################################
 #Evaluate the model
@@ -217,7 +223,7 @@ print("IoU socre is: ", iou_score)
 #######################################################################
 #Predict on a few images
 model = get_model()
-model.load_weights('mitochondria_test_40img_100epoch.hdf5') #Trained for 50 epochs and then additional 100
+model.load_weights('test_epoch_10_data_30.hdf5') #Trained for 50 epochs and then additional 100
 #model.load_weights('mitochondria_gpu_tf1.4.hdf5')  #Trained for 50 epochs
 
 test_img_number = random.randint(0, len(X_test)-1)#========================== added the -1 cuz it was giving out of range errors for some reason

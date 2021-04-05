@@ -21,12 +21,12 @@ def load_itk(filename):
 
     return ct_scan, origin, spacing
 
-if __name__ == '__dataloader_mhd__':
+if __name__ == '__main__':
 
 	print('XXXXXXXXXXXXXXXXXXXX')
 
-
 	array, origin, spacing1 = load_itk('gt_binary.mhd')
+
 	# print(array.shape)
 	# maxElement = np.amax(array)
 	# print(maxElement)
