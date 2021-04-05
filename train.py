@@ -1,16 +1,4 @@
-# https://youtu.be/csFGTLT6_WQ
-"""
-Author: Dr. Sreenivas Bhattiprolu
-Training and testing for semantic segmentation (Unet) of mitochondria
-Uses standard Unet framework with no tricks!
-Dataset info: Electron microscopy (EM) dataset from
-https://www.epfl.ch/labs/cvlab/data/data-em/
-Patches of 256x256 from images and labels
-have been extracted (via separate program) and saved to disk.
-This code uses 256x256 images/masks.
-To annotate images and generate labels, you can use APEER (for free):
-www.apeer.com
-"""
+
 
 from simple_unet_model import simple_unet_model   #Use normal unet model
 from keras.utils import normalize
