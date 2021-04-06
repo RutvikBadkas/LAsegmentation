@@ -1,0 +1,22 @@
+Epoch 1/10
+111/111 [==============================] - 292s 3s/step - loss: 0.9975 - jacard_coef: 0.0025 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 2/10
+111/111 [==============================] - 284s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 3/10
+111/111 [==============================] - 285s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 4/10
+111/111 [==============================] - 289s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 5/10
+111/111 [==============================] - 287s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 6/10
+111/111 [==============================] - 309s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 7/10
+111/111 [==============================] - 277s 2s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 8/10
+111/111 [==============================] - 273s 2s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 9/10
+111/111 [==============================] - 273s 2s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 10/10
+111/111 [==============================] - 305s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+7/7 [==============================] - 8s 1s/step - loss: 0.9891 - jacard_coef: 0.0182
+Accuracy of Jacard Model is =  1.818179152905941 %
