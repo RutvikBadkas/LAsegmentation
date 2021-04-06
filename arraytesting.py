@@ -42,7 +42,7 @@ def loaddataB(randomstring):
         path= image_directory + folder_name
         image_name = '/image.mhd'
         if folder_name.startswith('a'):
-            continue # mask_name = '/gt_binary.mhd'
+            mask_name = '/gt_binary.mhd'
         else:
             mask_name = '/gt_std.mhd'
 
