@@ -1,0 +1,6 @@
+Epoch 1/10
+111/111 [==============================] - 292s 3s/step - loss: 0.9975 - jacard_coef: 0.0025 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 2/10
+111/111 [==============================] - 284s 3s/step - loss: 0.9818 - jacard_coef: 0.0182 - val_loss: 0.9797 - val_jacard_coef: 0.0230
+Epoch 3/10
+ 27/111 [======>.......................] - ETA: 3:28 - loss: 0.9813 - jacard_coef: 0.0187

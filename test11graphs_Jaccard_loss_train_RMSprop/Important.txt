@@ -1,0 +1,3 @@
+https://stackoverflow.com/questions/48006094/how-can-my-loss-suddenly-increase-while-training-a-cnn-for-image-segmentation
+The reason for the graphs 5 and 6 being so fucked up is because the gradients were too high and the network predicted garbage
+The way to solve this apparantly is to reduce the learning rate to 0.001 so I am gonna try that. 
