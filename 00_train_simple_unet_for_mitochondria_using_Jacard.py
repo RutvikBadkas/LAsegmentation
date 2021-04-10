@@ -21,8 +21,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-image_directory = 'data/generated_patches/tifimages/'
-mask_directory = 'data/generated_patches/tifmasks/'
+image_directory = 'data/generated_patches/tifimagesnrrd/'
+mask_directory = 'data/generated_patches/tifmasksnrrd/'
 
 
 SIZE = 256
@@ -55,7 +55,7 @@ for i, image_name in enumerate(masks):
 #Normalize images
 image_dataset = np.expand_dims(normalize(np.array(image_dataset), axis=1),3)
 #D not normalize masks, just rescale to 0 to 1.
-mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /1.#change this for diff datasets to ensure val of 1.0
+mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /255.#change this for diff datasets to ensure val of 1.0
 
 maxElement3 = np.amax(mask_dataset)
 #print(mask_dataset.datatype)   
@@ -100,7 +100,7 @@ model_standard = get_standard_model()
 history_jacard = model_jacard.fit(X_train_quick_test, y_train_quick_test, 
                     batch_size = 16, 
                     verbose=1, 
-                    epochs=25, 
+                    epochs=15, 
                     validation_data=(X_test, y_test), 
                     shuffle=False)
 
