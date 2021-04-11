@@ -1,0 +1,14 @@
+Epoch 1/2
+
+1/1 [==============================] - ETA: 0s - loss: -0.3160 - dice_coef: 0.3160
+1/1 [==============================] - 7s 7s/step - loss: -0.3160 - dice_coef: 0.3160 - val_loss: -0.3182 - val_dice_coef: 0.3182
+Epoch 2/2
+
+1/1 [==============================] - ETA: 0s - loss: -0.3264 - dice_coef: 0.3264
+1/1 [==============================] - 5s 5s/step - loss: -0.3264 - dice_coef: 0.3264 - val_loss: -0.3435 - val_dice_coef: 0.3435
+
+1/1 [==============================] - ETA: 0s - loss: -0.3435 - dice_coef: 0.3435
+1/1 [==============================] - 3s 3s/step - loss: -0.3435 - dice_coef: 0.3435
+Accuracy of UNet2d Model with Loss: Jaccard is =  34.35284495353699 %
+IoU socre is:  0.22459391558056696
+Spacing of test image:  [1.25 1.25 1.37]

@@ -27,11 +27,11 @@ UNIQUEID=UNIQUEID.strftime("%m%d%H%M")
 # sys.exit(os.EX_OK)
 IMAGE_DIR = 'data/left_atrium/'
 MASK_DIR = 'data/left_atrium/'
-SIZE = 160
-DEPTH = 64
+SIZE = 80
+DEPTH = 32
 DEPTH_MID = int(DEPTH/2)
-EPOCHS = 2
-TEST_SIZE = 0.9
+EPOCHS = 15
+TEST_SIZE = 0.2
 LOSS_FUNC = 'Jaccard'
 OPTIMIZER = 'Adam'
 FOLDER = '.\\Tests3d\\test_'+str(UNIQUEID)+'_EPO_'+str(EPOCHS)+'_Testsize_'+str(TEST_SIZE)+'_Loss_'+str(LOSS_FUNC)+'_Opt_'+str(OPTIMIZER)+'\\'
@@ -153,7 +153,7 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     #If starting with pre-trained weights.
     #model.load_weights('mitochondria_gpu_tf1.4.hdf5')    
 
-    history_jacard = model.fit(X_train, y_train,
+    history_dice = model.fit(X_train, y_train,
                         batch_size = 16,
                         verbose=1,
                         epochs=EPOCHS,
@@ -166,8 +166,8 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     _, acc = model.evaluate(X_test, y_test)
     print("Accuracy of UNet2d Model with Loss: " +str(LOSS_FUNC)+ " is = ", (acc * 100.0), "%")
 
-    loss = history_jacard.history['loss']
-    val_loss = history_jacard.history['val_loss']
+    loss = history_dice.history['loss']
+    val_loss = history_dice.history['val_loss']
     EPOCHS = range(1, len(loss) + 1)
 
 
@@ -182,9 +182,9 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     plt.close()
     #plt.show()
 
-    jc = history_jacard.history['jacard_coef']
+    jc = history_dice.history['dice_coef']
     #acc = history.history['accuracy']
-    val_jc = history_jacard.history['val_jacard_coef']
+    val_jc = history_dice.history['val_dice_coef']
     #val_acc = history.history['val_accuracy']
 
     plt.plot(EPOCHS, jc, '#0080b3', label='Training Accuracy')
@@ -209,9 +209,9 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     #######################################################################
     #Predict on a few images
     #model = get_model()
-    #model.load_weights('mitochondria_with_jacard_50_plus_50_EPOCHS.hdf5') #Trained for 50 EPOCHS and then additional 100
+    #model.load_weights('mitochondria_with_dice_50_plus_50_EPOCHS.hdf5') #Trained for 50 EPOCHS and then additional 100
     #model.load_weights('mitochondria_gpu_tf1.4.hdf5')  #Trained for 50 EPOCHS
-
+   
     test_img_number = random.randint(0, len(X_test-1))
     test_img = X_test[test_img_number]
     ground_truth=y_test[test_img_number]
@@ -219,7 +219,22 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     test_img_input=np.expand_dims(test_img_norm, 0)
     prediction = (model.predict(test_img_input)[0,:,:,:,0] > 0.5).astype(np.uint8)
 
-    test_img_other = image_dataset[0,:,:,:,:]
+    path='.\\data\\evaluate\\image.mhd'
+    test_img_other, origin3, spacing3 = load_itk(path)
+    print('Spacing of test image: ', spacing3)
+    test_img_other=np.transpose(test_img_other, (1, 2, 0))
+
+    shape=test_img_other.shape
+    dim1_start=int((shape[0]-SIZE)/2)
+    dim1_end=int(shape[0]-dim1_start)
+    dim2_start=int((shape[1]-SIZE)/2)
+    dim2_end=int(shape[1]-dim2_start)
+    dim3_start=int((shape[2]-DEPTH)/2)
+    dim3_end=int(shape[2]-dim3_start-shape[2]%2)
+
+    test_img_other = test_img_other[dim1_start:dim1_end,dim2_start:dim2_end,dim3_start:dim3_end]
+
+    #test_img_other = image_dataset[0,:,:,:,:]
     # test_img_other = cv2.imread('data/test_images/01-1_256.tif', 0)
     test_img_other_norm = np.expand_dims(normalize(np.array(test_img_other), axis=1),3)
     test_img_other_norm=test_img_other_norm[:,:,:,0][:,:,:,None]
@@ -273,6 +288,12 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
         writer.writerow([OPTIMIZER])
     
     plt.imsave('output.png', prediction_other[:,:,DEPTH_MID], cmap='gray')
+    
+    import nibabel as nib
+
+    nifty_img = nib.Nifti1Image(prediction_other, affine=np.eye(4))
+    nib.save(nifty_img, FOLDER+'prediction.nii') 
+
     f.close()   
 
 get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLDER)
