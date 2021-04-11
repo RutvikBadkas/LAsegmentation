@@ -14,10 +14,10 @@ def load_itk(filename):
     ct_scan = sitk.GetArrayFromImage(itkimage)
 
     # Read the origin of the ct_scan, will be used to convert the coordinates from world to voxel and vice versa.
-    origin = np.array(list(reversed(itkimage.GetOrigin())))
+    origin = np.array(list(itkimage.GetOrigin()))
 
     # Read the spacing along each dimension
-    spacing = np.array(list(reversed(itkimage.GetSpacing())))
+    spacing = np.array(list(itkimage.GetSpacing()))
 
     return ct_scan, origin, spacing
 
@@ -78,4 +78,5 @@ if __name__ == '__main__':
 	from PIL import Image
 	im = Image.fromarray(array2d)
 	im.save("test6cropped.tiff")
+	
 

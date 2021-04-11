@@ -1,7 +1,7 @@
 
 from tensorflow import keras
 
-from unet3D_model_with_jacard import simple_unet_model_with_jacard   #Use normal unet model
+from simple_unet_model_3d import simple_unet_model_3d   #Use normal unet model
 from keras.utils import normalize
 import os
 import cv2
@@ -22,7 +22,7 @@ mask_directory = 'data/left_atrium/'
 # tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
 # --------------------------------------------------------------------------------------------------------change
 # --------------------------------------------------------------------------------------------------------change
-SIZE = 64
+SIZE = 32
 image_dataset = []  #Many ways to handle data, you can use pandas. Here, we are using a list format.
 mask_dataset = []  #Place holders to define add labels. We will add 0 to all parasitized images and 1 to uninfected.
 
@@ -75,8 +75,8 @@ for i, folder_name in enumerate(images):    #Remember enumerate method adds a co
     #for i in range(shape[0]):
         
         
-    temp_image = image1[30:62,32:288,32:288]
-    temp_mask = mask1[30:62,32:288,32:288]
+    temp_image = image1[30:62,32:64,32:64]
+    temp_mask = mask1[30:62,32:64,32:64]
 
         # maxElement4 = np.amax(temp_mask)
         # if maxElement4 ==0:
@@ -168,7 +168,7 @@ IMG_WIDTH  = image_dataset.shape[3]
 IMG_CHANNELS = image_dataset.shape[4]
 
 def get_model():
-    return simple_unet_model_with_jacard(IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
+    return simple_unet_model_3d(IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
 
 model = get_model()
 
@@ -195,7 +195,7 @@ history_jacard = model.fit(X_train, y_train,
 # This code uses 256x256 images/masks.
 # """
 
-# from simple_unet_model_with_jacard import simple_unet_model_with_jacard   #Use normal unet model
+# from simple_unet_model_3d import simple_unet_model_3d   #Use normal unet model
 # from simple_unet_model import simple_unet_model   #Use normal unet model
 # from arraytesting import loaddataB
 # from keras.utils import normalize
@@ -262,7 +262,7 @@ history_jacard = model.fit(X_train, y_train,
 # IMG_CHANNELS = image_dataset.shape[3]
 
 # def get_jacard_model():
-#     return simple_unet_model_with_jacard(IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
+#     return simple_unet_model_3d(IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
 
 # model_jacard = get_jacard_model()
 
@@ -272,7 +272,7 @@ history_jacard = model.fit(X_train, y_train,
 # # model_standard = get_standard_model()
 
 # #If starting with pre-trained weights. 
-# #model.load_weights('mitochondria_with_jacard_50_epochs.hdf5')
+# #model.load_weights('mitochondria_3d_50_epochs.hdf5')
 # print(model_jacard)
 # print(X_train.shape)
 # print(y_train.shape)
@@ -381,7 +381,7 @@ print("IoU socre is: ", iou_score)
 #######################################################################
 #Predict on a few images
 #model = get_model()
-#model.load_weights('mitochondria_with_jacard_50_plus_50_epochs.hdf5') #Trained for 50 epochs and then additional 100
+#model.load_weights('mitochondria_3d_50_plus_50_epochs.hdf5') #Trained for 50 epochs and then additional 100
 #model.load_weights('mitochondria_gpu_tf1.4.hdf5')  #Trained for 50 epochs
 
 test_img_number = random.randint(0, len(X_test-1))

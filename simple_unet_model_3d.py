@@ -2,8 +2,20 @@
 # u-net model 
 
 from keras.models import Model
-from keras.layers import Input, Conv3D, MaxPooling3D, UpSampling3D, concatenate, Conv3DTranspose, BatchNormalization, Dropout, Lambda
+from keras import Input
+from keras.layers import Dot, Conv3D, MaxPooling3D, UpSampling3D, concatenate, Conv3DTranspose, BatchNormalization, Dropout, Lambda
 from keras import backend as K
+
+# Dice Coeff: https://towardsdatascience.com/medical-images-segmentation-using-keras-7dc3be5a8524
+def dice_coef(y_true, y_pred):
+    smooth=1.
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
 
 def jacard_coef(y_true, y_pred):
     # y_true = y_true[0, :, :, :, :]
@@ -13,28 +25,15 @@ def jacard_coef(y_true, y_pred):
     intersection = K.sum(y_true_f * y_pred_f)
     return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
 
-# def jacard_coef(targets, inputs, smooth=1e-6):
-#     targets = targets[0, :, :, :]
-#     inputs  = inputs[0, :, :, :]
-#     #flatten label and prediction tensors
-#     inputs = K.flatten(inputs)
-#     print(inputs.shape)
-#     targets = K.flatten(targets)
-#     print(targets.shape)
-
-#     # import sys
-#     # sys.exit(os.EX_OK)
-#     intersection = K.sum((targets*inputs))
-#     dice = (2*intersection + smooth) / (K.sum(targets) + K.sum(inputs) + smooth)
-#     return dice
-
 def jacard_coef_loss(y_true, y_pred):
     return 1-jacard_coef(y_true, y_pred)  # -1 ultiplied as we want to minimize this value as loss function
 
 ################################################################
-def simple_unet_model_with_jacard( IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS):
+def simple_unet_model_3d(IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS):
 #Build the model
-    inputs = Input(( IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS))
+    
+    K.set_image_data_format('channels_last')
+    inputs = Input((IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS))
     #s = Lambda(lambda x: x / 255)(inputs)   #No need for this if we normalize our inputs beforehand
     s = inputs
 
@@ -83,7 +82,7 @@ def simple_unet_model_with_jacard( IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNEL
     c8 = Conv3D(32, (3, 3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c8)
      
     u9 = Conv3DTranspose(16, (2, 2, 2), strides=(2, 2, 2), padding='same')(c8)
-    u9 = concatenate([u9, c1], axis=3)
+    u9 = concatenate([u9, c1])
     c9 = Conv3D(16, (3, 3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u9)
     c9 = Dropout(0.1)(c9)
     c9 = Conv3D(16, (3, 3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c9)
@@ -92,7 +91,8 @@ def simple_unet_model_with_jacard( IMG_DEPTH, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNEL
      
     model = Model(inputs=[inputs], outputs=[outputs])
     #model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    model.compile(optimizer = 'adam', loss = [jacard_coef_loss], metrics = [jacard_coef])
+    #model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = 'accuracy')
+    model.compile(optimizer = 'adam', loss = [dice_coef_loss], metrics = [dice_coef])
 
     model.summary()
     

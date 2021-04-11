@@ -1,6 +1,6 @@
 
 
-from simple_unet_model_with_jacard import simple_unet_model_with_jacard   #Use normal unet model
+from simple_unet_model_3d import simple_unet_model_3d   #Use normal unet model
 from keras.utils import normalize
 import os
 import sys
@@ -28,16 +28,19 @@ UNIQUEID=UNIQUEID.strftime("%m%d%H%M")
 IMAGE_DIR = 'data/left_atrium/'
 MASK_DIR = 'data/left_atrium/'
 SIZE = 160
+DEPTH = 64
+DEPTH_MID = int(DEPTH/2)
 EPOCHS = 2
 TEST_SIZE = 0.9
 LOSS_FUNC = 'Jaccard'
 OPTIMIZER = 'Adam'
-FOLDER = '.\\Tests\\test_'+str(UNIQUEID)+'_EPO_'+str(EPOCHS)+'_Testsize_'+str(TEST_SIZE)+'_Loss_'+str(LOSS_FUNC)+'_Opt_'+str(OPTIMIZER)+'\\'
+FOLDER = '.\\Tests3d\\test_'+str(UNIQUEID)+'_EPO_'+str(EPOCHS)+'_Testsize_'+str(TEST_SIZE)+'_Loss_'+str(LOSS_FUNC)+'_Opt_'+str(OPTIMIZER)+'\\'
 Model_Name = FOLDER+'model.hdf5'
 #os.mkdir(os.path.abspath(os.getcwd())+'\\Tests',mode = 0o666)
 os.mkdir(FOLDER,mode = 0o666)
 
 print('directory created...')
+
 def importdata(IMAGE_DIR, MASK_DIR, SIZE):
     
     image_dataset = []  #Here, we are using a list format.
@@ -57,39 +60,48 @@ def importdata(IMAGE_DIR, MASK_DIR, SIZE):
         	continue#mask_name = '/gt_std.mhd'
 
         image1, origin1, spacing1 = load_itk(path+image_name)
+
         maxElement1 = np.amax(image1)
         image1= image1 * 255/maxElement1
 
         mask1, origin2, spacing2 = load_itk(path+mask_name)
+
+        image1=np.transpose(image1, (1, 2, 0))
+        mask1=np.transpose(mask1, (1, 2, 0))
 
         #mask1 = mask1.astype(np.uint8)
         image1 = image1.astype(np.uint8)
         mask1 = (mask1 > 0)
 
         shape=image1.shape
+        print(shape) 
 
-        for i in range(shape[0]):
+        #new img dimentions after cropping
+        dim1_start=int((shape[0]-SIZE)/2)
+        dim1_end=int(shape[0]-dim1_start)
+        dim2_start=int((shape[1]-SIZE)/2)
+        dim2_end=int(shape[1]-dim2_start)
+        dim3_start=int((shape[2]-DEPTH)/2)
+        dim3_end=int(shape[2]-dim3_start-shape[2]%2)
 
-            #new img dimentions after cropping
-            crop_dim1_start=int((shape[1]-SIZE)/2)
-            crop_dim1_end=int(shape[1]-crop_dim1_start)
-            crop_dim2_start=int((shape[2]-SIZE)/2)
-            cropy_dim2_end=int(shape[1]-crop_dim2_start)
+        temp_image = image1[dim1_start:dim1_end,dim2_start:dim2_end,dim3_start:dim3_end]
+        temp_mask = mask1[dim1_start:dim1_end,dim2_start:dim2_end,dim3_start:dim3_end]
 
-            temp_image = image1[i,crop_dim1_start:crop_dim1_end,crop_dim2_start:cropy_dim2_end]
-            temp_mask = mask1[i,crop_dim1_start:crop_dim1_end,crop_dim2_start:cropy_dim2_end]
+        image_dataset.append(temp_image)
+        mask_dataset.append(temp_mask)
 
-            maxElement4 = np.amax(temp_mask)
-            if maxElement4 ==0:
-            	continue
+        #print(len(image_dataset)) 
+        print(temp_image.shape)    
+    #(214214,320,320,1)
+    #(214214,64,320,320,1)
 
-            image_dataset.append(np.array(temp_image))
-            mask_dataset.append(np.array(temp_mask))
-    
+    #image_dataset = np.array(image_dataset)
+    #print(image_dataset.shape)
+
     #Normalize images
-    image_dataset = np.expand_dims(normalize(np.array(image_dataset), axis=1),3)
+    image_dataset = np.expand_dims(normalize(image_dataset, axis=1),4)
     #D not normalize masks, just rescale to 0 to 1.
-    mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /255.
+    mask_dataset = np.expand_dims((np.array(mask_dataset)),4) /1.
 
     return image_dataset, mask_dataset
 
@@ -110,10 +122,10 @@ def plotsanity(X_train, FOLDER):
     plt.figure(figsize=(12, 6))
     plt.subplot(121)
     plt.title('Test Image')
-    plt.imshow(np.reshape(X_train[image_number], (SIZE, SIZE)), cmap='gray')
+    plt.imshow(np.reshape(X_train[image_number,:,:,DEPTH_MID], (SIZE, SIZE)), cmap='gray')
     plt.subplot(122)
     plt.title('Test Mask (Ground Truth)')
-    plt.imshow(np.reshape(y_train[image_number], (SIZE, SIZE)), cmap='gray')
+    plt.imshow(np.reshape(y_train[image_number,:,:,DEPTH_MID], (SIZE, SIZE)), cmap='gray')
     plt.savefig(FOLDER+'plot1.png', dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -122,11 +134,15 @@ plotsanity(X_train, FOLDER)
 
 def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLDER):
     
+    
     IMG_HEIGHT = image_dataset.shape[1]
     IMG_WIDTH  = image_dataset.shape[2]
-    IMG_CHANNELS = image_dataset.shape[3]
+    IMG_DEPTH = image_dataset.shape[3]
+    IMG_CHANNELS = image_dataset.shape[4]
     
-    model = simple_unet_model_with_jacard(IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
+
+
+    model = simple_unet_model_3d(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS)
 
     # with open(FOLDER+'Misc_'+str(UNIQUEID)+'.txt','w') as fh:
     # # Pass the file handle in as a lambda function to make it callable
@@ -135,7 +151,7 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     f = open(FOLDER+"epoch_time.txt", 'w')
     sys.stdout = f
     #If starting with pre-trained weights.
-    #model.load_weights('mitochondria_gpu_tf1.4.hdf5')
+    #model.load_weights('mitochondria_gpu_tf1.4.hdf5')    
 
     history_jacard = model.fit(X_train, y_train,
                         batch_size = 16,
@@ -199,37 +215,37 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     test_img_number = random.randint(0, len(X_test-1))
     test_img = X_test[test_img_number]
     ground_truth=y_test[test_img_number]
-    test_img_norm=test_img[:,:,0][:,:,None]
+    test_img_norm=test_img[:,:,:,0][:,:,:,None]
     test_img_input=np.expand_dims(test_img_norm, 0)
-    prediction = (model.predict(test_img_input)[0,:,:,0] > 0.5).astype(np.uint8)
+    prediction = (model.predict(test_img_input)[0,:,:,:,0] > 0.5).astype(np.uint8)
 
-    test_img_other = image_dataset[40,:,:,:]
+    test_img_other = image_dataset[0,:,:,:,:]
     # test_img_other = cv2.imread('data/test_images/01-1_256.tif', 0)
-    test_img_other_norm = np.expand_dims(normalize(np.array(test_img_other), axis=1),2)
-    test_img_other_norm=test_img_other_norm[:,:,0][:,:,None]
+    test_img_other_norm = np.expand_dims(normalize(np.array(test_img_other), axis=1),3)
+    test_img_other_norm=test_img_other_norm[:,:,:,0][:,:,:,None]
     test_img_other_input=np.expand_dims(test_img_other_norm, 0)
 
     #Predict and threshold for values above 0.5 probability
-    prediction_other = (model.predict(test_img_other_input)[0,:,:,0] > 0.5).astype(np.uint8)
+    prediction_other = (model.predict(test_img_other_input)[0,:,:,:,0] > 0.5).astype(np.uint8)
 
 
     plt.figure(figsize=(16, 8))
     plt.title('Model Result with loss: '+str(LOSS_FUNC)+' and optimizer: '+str(OPTIMIZER))
     plt.subplot(231)
     plt.title('Testing Image')
-    plt.imshow(test_img[:,:,0], cmap='gray')
+    plt.imshow(test_img[:,:,DEPTH_MID,0], cmap='gray')
     plt.subplot(232)
     plt.title('Testing Label')
-    plt.imshow(ground_truth[:,:,0], cmap='gray')
+    plt.imshow(ground_truth[:,:,DEPTH_MID,0], cmap='gray')
     plt.subplot(233)
     plt.title('Prediction on test image')
-    plt.imshow(prediction, cmap='gray')
+    plt.imshow(prediction[:,:,DEPTH_MID], cmap='gray')
     plt.subplot(234)
     plt.title('External Image')
-    plt.imshow(test_img_other, cmap='gray')
+    plt.imshow(test_img_other[:,:,DEPTH_MID], cmap='gray')
     plt.subplot(235)
     plt.title('Prediction of external Image')
-    plt.imshow(prediction_other, cmap='gray')
+    plt.imshow(prediction_other[:,:,DEPTH_MID], cmap='gray')
     plt.savefig(FOLDER+'plot4.png', dpi=300, bbox_inches='tight')
     plt.close()
     #plt.show()
@@ -256,7 +272,8 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
         writer.writerow(['Optimizer'])
         writer.writerow([OPTIMIZER])
     
-    plt.imsave('output.png', prediction_other, cmap='gray')
+    plt.imsave('output.png', prediction_other[:,:,DEPTH_MID], cmap='gray')
     f.close()   
+
 get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLDER)
 
