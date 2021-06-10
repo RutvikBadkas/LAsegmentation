@@ -1,0 +1,15 @@
+numpy
+tensorflow=2.4.1
+scikit-image
+trimesh
+SimpleITK
+opencv
+packaging
+scikit-learn
+nibabel
+keras
+SciPy
+
+datetime
+Pillow
+matplotlib
