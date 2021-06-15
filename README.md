@@ -43,4 +43,4 @@ dataloader - this file contains a script to convert a .mhd/raw MRI scan to a 3D 
 Folder Structure
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 The output of the script is going to be saved in a subfolder in ./tests3d/. This output will contain a sample prediction on an external image saved as nifty file: prediction.nii , validation and training loss curves in png format, and a 2D slice from the midpoint of the dataset to check that the masks and images are correctly aligned.
-......**** Going to update and complete the documentation by 01/07/2021****
+......**** Going to update and complete the documentation by 01/07/2021**** in the meantime, if you have any questions, feel free to contact me @ rutvik239@gmail.com / +447432692807
