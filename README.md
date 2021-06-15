@@ -1,14 +1,45 @@
-# Atriumsegmentation
-UPDATE 25/04/2021 - I am currently training the model on HPC servers (96GB ram, 16 CPU cores, 4xRTX6000). Will add a commit once training is complete. Also going to build a class/function to augment a Numpy dataset to add additional functionality to the package as a whole.
+# 3D Left Atrium Segmentation and Triangulation using 3D Unet and Marching Cubes.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Hey there! I am building a pipeline to go from an MRI scan to a Finite Element Mesh using Tensorflow, Unet, Numpy, Scikit... bla bla bla
-I am still experimenting and refining so the repo will be a bit messy for now.
+Acknowledgements
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-I have compiled and tested my code locally but am refining the project so that all of you can easily utilize my framework for your experiments so stay tuned, I will also write a comprehensive documentation so you can easily learn to import your data and train the model. I Will be done with everything by 15th June 2021.
+I would like to express my heartfelt gratitude to my supervisor, Dr. Chris Cantwell, for providing the
+opportunity to work with him on this Cardiac Electrophysiology research project. Thank you for introducing
+me to Python, for your continual support and advice over the last three years, and for helping me realise my
+passion for Deep Learning and Artificial Intelligence.
 
-Publishing My Research Paper on 8st June 2021
+My sincere thanks also goes to Dr. Francesco Montomoli, whose feedback during the interim was critical in
+refining and reshaping this project.
 
-Stages
-1. Segmentation using Unet Based CNN ..................................done
-2. Convert output to stl file or set of coordinates of choice..........done
-3. Create Surface or Volume Mesh using Gmsh or Nekmesh.................done
+I owe gratitude to my friends and family, who were always supportive of me. Thank you
+for encouraging me to study in London and for your unwavering support during my term at Imperial. I would
+especially like to thank my cousin for his guidance and continual support during the COVID-19 pandemic.
+
+I would also like to thank Dr Sreenivas Bhattiprolu. Please visit his GitHub page: https://github.com/bnsreenu/python_for_microscopists
+and youtube channel: https://www.youtube.com/channel/UC34rW-HtPJulxr5wp2Xa04w. I learnt absolutely incredible and wholistic tutorials from Dr Sreeni via his youtube tutorials that cover Deep Learning for microscopists. This project is based on a modified version of the UNET implementation in tutorial 204 in the link above.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Installation Guide
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Clone this repository on your local machine.
+2. Install the packages in requirements.txt via pip or conda.
+3. Place the data in the appropriate folders described in the next section.
+4. Run the script train3d.py in the main directory to output a model and a prediction on test data. Open train3d.py and edit hyperparameters to change the default values before running. Note that the train3d.py comes with preloaded weighs from the training I did on my dataset. This will save you an incredible amount of training time. 
+6. Run the script Meshgen.py in the main directory to output a triangulation based on the predictions output in the previous step. Note this script contains a loop hence once needs to be run once at the end and will automatically generate meshes from all the subfolders in ./test3d/
+7. The output will appear in the .tests3d/ folder with a unique folder name that contains the date, time and hyperparameters such as no of epochs etc. It's fairly intuitive. This is done to organise the different testing runs and avoid having to move files, every time the network needs to be trained.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Files
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+simple_Unet_3d - this file contains a 3D unet model with a Dice loss and SGD optimiser with gradient clipping and specific learning rate set. 
+Meshgen - this file contains the marching cube algorithm and will generate meshes from all the predictions made in the subfolders ./tests3d/XXXXXX/prediction.nii to output a .stl surface mesh in the same location: ./tests3d/XXXXXX/mesh.stl.
+train3d - this file contains the main script that calls on the model, trains it, and outputs the result. Edit this script to change all the hyperparameters. 
+train3d_augmented - this file contains the same script as train3d except, this file includes a data augmentation that will translate each data sample a particular number of pixels in the x and y direction and add this augmented dataset to the original, hence doubling the effective amount of data available to the network. Note this will take much longer to train and will use a much greater memory. 
+dataloader - this file contains a script to convert a .mhd/raw MRI scan to a 3D numpy array to be fed into the network. Note edit this file if your data is in a different format. I will update this file to include other datatypes like .nii.gz , .nrrd , .dcm etc in the future. 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Folder Structure
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The output of the script is going to be saved in a subfolder in ./tests3d/. This output will contain a sample prediction on an external image saved as nifty file: prediction.nii , validation and training loss curves in png format, and a 2D slice from the midpoint of the dataset to check that the masks and images are correctly aligned. 
