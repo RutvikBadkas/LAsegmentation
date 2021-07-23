@@ -5,7 +5,7 @@ Acknowledgements
 
 I would like to express my heartfelt gratitude to my supervisor, Dr. Chris Cantwell, for providing the
 opportunity to work with him on this Cardiac Electrophysiology research project. Thank you for introducing
-me to Python, for your continual support and advice over the last three years, and for helping me realise my
+me to Machine Learning, for your continual support and advice over the last three years, and for helping me realise my
 passion for Deep Learning and Artificial Intelligence.
 
 My sincere thanks also goes to Dr. Francesco Montomoli, whose feedback during the interim was critical in
@@ -16,12 +16,12 @@ for encouraging me to study in London and for your unwavering support during my 
 especially like to thank my cousin for his guidance and continual support during the COVID-19 pandemic.
 
 I would also like to thank Dr Sreenivas Bhattiprolu. Please visit his GitHub page: https://github.com/bnsreenu/python_for_microscopists
-and youtube channel: https://www.youtube.com/channel/UC34rW-HtPJulxr5wp2Xa04w. I learnt absolutely incredible and wholistic tutorials from Dr Sreeni via his youtube tutorials that cover Deep Learning for microscopists. This project is based on a modified version of the UNET implementation in tutorial 204 in the link above.
+and youtube channel: https://www.youtube.com/channel/UC34rW-HtPJulxr5wp2Xa04w. I learnt absolutely incredible and wholistic concepts from Dr Sreeni via his youtube tutorials that cover Deep Learning for microscopists. 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Installation Guide
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+0. Create a virtual env with python 3.6.8
 1. Clone this repository on your local machine.
 2. Install the packages in requirements.txt via pip or conda.
 3. Place the data in the appropriate folders described in the next section.
@@ -33,14 +33,13 @@ Installation Guide
 Files
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-simple_Unet_3d - this file contains a 3D unet model with a Dice loss and SGD optimiser with gradient clipping and specific learning rate set. 
+simple_Unet_3d - this file contains a 3D unet architecture. This is already configured so should work out of the box but can edit optimizer/Loss function/CNN layers here. 
 Meshgen - this file contains the marching cube algorithm and will generate meshes from all the predictions made in the subfolders ./tests3d/XXXXXX/prediction.nii to output a .stl surface mesh in the same location: ./tests3d/XXXXXX/mesh.stl.
-train3d - this file contains the main script that calls on the model, trains it, and outputs the result. Edit this script to change all the hyperparameters. 
-train3d_augmented - this file contains the same script as train3d except, this file includes a data augmentation that will translate each data sample a particular number of pixels in the x and y direction and add this augmented dataset to the original, hence doubling the effective amount of data available to the network. Note this will take much longer to train and will use a much greater memory. 
+train3d - this file contains the main script that calls on the model, trains it, and outputs the result. Edit this script to change all the hyperparameters. This file includes a data augmentation func that will translate each data sample a particular number of pixels in the x and y direction and add this augmented dataset to the original, hence doubling the effective amount of data available to the network. Note this will take much longer to train and will use a much greater memory. 
 dataloader - this file contains a script to convert a .mhd/raw MRI scan to a 3D numpy array to be fed into the network. Note edit this file if your data is in a different format. I will update this file to include other datatypes like .nii.gz , .nrrd , .dcm etc in the future. 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Folder Structure
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-The output of the script is going to be saved in a subfolder in ./tests3d/. This output will contain a sample prediction on an external image saved as nifty file: prediction.nii , validation and training loss curves in png format, and a 2D slice from the midpoint of the dataset to check that the masks and images are correctly aligned.
-......**** Going to update and complete the documentation by 01/07/2021**** in the meantime, if you have any questions, feel free to contact me @ rutvik239@gmail.com / +447432692807
+The output of the train.py script is going to be saved in a subfolder in ./tests3d/. This output will contain a sample prediction on an external image saved as nifty file: prediction.nii , validation and training loss curves in png format, and a 2D slice from the midpoint of the dataset to check that the masks and images are correctly aligned.
+......**** Going to update and complete the documentation by 01/09/2021**** in the meantime, if you have any questions, feel free to contact me @ rutvik239@gmail.com / +447432692807
