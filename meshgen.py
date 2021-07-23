@@ -1,3 +1,8 @@
+# So this file basically generates surface meshes from the predictions that have been made by training the model. It automatically goes through all the experiment folders and 
+# does it in one go. To use this, just check the names and path and run once at the end of your project and it will loop through everything. I used Marching cubes, which is
+# pretty decent for low resolution meshes (because it is linear). For high res meshes, you may want to use a package called Gmsh and use high order FE elements.
+# I also calculated a paramter called the Hausdorff distance, to compare the predictions to a mesh that I generated from the ground truth. I wrote this into a separate text file.
+
 import skimage , trimesh
 from skimage.measure import marching_cubes
 import numpy as np
