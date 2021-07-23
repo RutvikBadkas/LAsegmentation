@@ -1,6 +1,12 @@
+# This is the MAIN file. Run this and the magic will begin. This will automatically generate a sub folder in /tests3d to store all the files related to the run with a timestamp.
+# This file outputs, the model, a prediction segmentation in .nii format made from the data in the eval folder, an excel sheet with the timestamps of the epochs and evolution
+# of the loss functions, and graphs for the loss functions. 
 
+# The output prediction will of of .nii regardless of your original data type. I chose .nii because it is most commonly used and very easy to import/export later.
+# There is a data augmentation function within this script and it will augment the data while importing so note that if you use it, you will literally double the memory required.
+# All you need to do is add the dataset to the paths specified in the repo. change the names in this script and run it and you will be done.
 
-from simple_unet_model_3d import simple_unet_model_3d   #Use normal unet model
+from simple_unet_model_3d import simple_unet_model_3d   # That is the model script. Have a look at it too, although I already configured that so it should work without errors.
 from keras.utils import normalize
 import os
 import sys
@@ -9,7 +15,6 @@ from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 from dataloader_mhd import load_itk
-#from arraytesting import loaddataB
 from datetime import datetime
 from packaging import version
 #import tensorflow as tf
@@ -28,15 +33,18 @@ UNIQUEID=datetime.now()
 UNIQUEID=UNIQUEID.strftime("%m%d%H%M")
 # import sys
 # sys.exit(os.EX_OK)
+
+# Configure these before Running the script
+
 IMAGE_DIR = 'data/left_atrium/'
 MASK_DIR = 'data/left_atrium/'
-SIZE = 160
-DEPTH = 16
-DEPTH_MID = int(DEPTH/2)
-EPOCHS = 2
-TEST_SIZE = 0.2
-LOSS_FUNC = 'Jaccard'
-OPTIMIZER = 'SGD lr 0p01'
+SIZE = 160                       # this is desired x/y square size, this script will automatically square crop the input images with respect to the center.
+DEPTH = 16			 # this is the desired z length. Configure the function in the dataloader file to make sure the axes are correct for your samples.
+DEPTH_MID = int(DEPTH/2)         # A slice will be taken along the z direction at the midpoint, to be displayed as 2D image in the graphs.
+EPOCHS = 2                       # Number of epochs, my model converged at 600. 
+TEST_SIZE = 0.2                  # The ratio of images from the total dataset that are used as validation or testing images
+LOSS_FUNC = 'Jaccard'            # This is for naming the files and graphs, to change this, go to the simple unet 3d file
+OPTIMIZER = 'SGD lr 0p01' 	 # This is for naming the files and graphs, to change this, go to the simple unet 3d file
 FOLDER = '.\\Tests3d\\test_'+str(UNIQUEID)+'_EPO_'+str(EPOCHS)+'_Testsize_'+'0p2'+'_Loss_'+str(LOSS_FUNC)+'_Opt_'+str(OPTIMIZER)+'\\'
 Model_Name = FOLDER+'model.hdf5'
 #os.mkdir(os.path.abspath(os.getcwd())+'\\Tests',mode = 0o666)
@@ -44,7 +52,7 @@ os.mkdir(FOLDER,mode = 0o777)
 
 print('directory created...')
 
-#Function to shift data
+#Function to augment data by shifting it in the x and y direction
 def datashift(images,masks,shiftx,shifty):
 	
 	b = np.roll(images, shiftx, axis=1)
@@ -69,45 +77,48 @@ def datashift(images,masks,shiftx,shifty):
 
 	return(b,c)
 
+## function to rotate the data
+
 # def datarotate(degrees,image):
 # 	theta = np.radians(degrees)
 # 	v=gjmhjhj
 # 	for n in range(DEPTH):
-
 # 		r = np.array(( (np.cos(theta), -np.sin(theta)),
 # 	               (np.sin(theta),  np.cos(theta)) ))
-
 # 	# print('rotation matrix:')
 # 	# print(r)
-
 # 		v[:,:,n] = np.array(image[:,:,n])
-
 # 		r.dot(v)
+
+# Function to import the dataset into the memory, most of your initial problems will occur in this function as you will have different file names and paths.
+# You will need to configure this file before your first run. Just debug this separately first and print the list dimensions to see if they are okay before running the whole script.
 
 def importdata(IMAGE_DIR, MASK_DIR, SIZE):
     
-    image_dataset = []  #Here, we are using a list format.
-    mask_dataset = []  #Place holders to define add labels. We will add 0 to all parasitized images and 1 to uninfected.
+    image_dataset = []  
+    mask_dataset = []  
 
     images = os.listdir(IMAGE_DIR)
-    for i, folder_name in enumerate(images):    #Remember enumerate method adds a counter and returns the enumerate object
-        
+    for i, folder_name in enumerate(images):    
+	
         if folder_name == 'data_readme.txt':
             continue
+	
         path= IMAGE_DIR + folder_name
-        image_name = '/image.mhd'
         
-        if folder_name.startswith('a'):
-        	mask_name = '/gt_binary.mhd'
+	image_name = '/image.mhd' # name of the input image
+        
+        if folder_name.startswith('a'): # names of the input mask/ground truth, there were two names hence I used an if. You will need to change this.
+        	mask_name = '/gt_binary.mhd' 
         else:
         	mask_name = '/gt_std.mhd'
 
-        image1, origin1, spacing1 = load_itk(path+image_name)
-
+        image1, origin1, spacing1 = load_itk(path+image_name) # calling the function from the dataloader file to import the raw/mhd images. Change that function for diff data types.
+	
         maxElement1 = np.amax(image1)
         image1= image1 * 255/maxElement1
 
-        mask1, origin2, spacing2 = load_itk(path+mask_name)
+        mask1, origin2, spacing2 = load_itk(path+mask_name) # calling the function from the dataloader file to import the raw/mhd masks/labe. Change that function for diff data types.
 
         image1=np.transpose(image1, (1, 2, 0))
         mask1=np.transpose(mask1, (1, 2, 0))
@@ -151,10 +162,7 @@ def importdata(IMAGE_DIR, MASK_DIR, SIZE):
 image_dataset,mask_dataset = importdata(IMAGE_DIR, MASK_DIR, SIZE)
 
 
-
-
-
-#function to print data.
+# THis was an experimental check, you don't need this.
 def datacheck(X_train,y_train, FOLDER, DEPTH_X,image_number ):
 
     plt.figure(figsize=(12, 6))
@@ -169,6 +177,7 @@ def datacheck(X_train,y_train, FOLDER, DEPTH_X,image_number ):
 
 DEPTH_X_list=[DEPTH_MID, DEPTH_MID+2] 
 
+# THis was an experimental check, you don't need this. Comment this.
 for DEPTH_X in DEPTH_X_list:
 	os.mkdir(FOLDER+'\\'+str(DEPTH_X),mode = 0o777)
 	for image_number in range(len(image_dataset)):
@@ -176,6 +185,8 @@ for DEPTH_X in DEPTH_X_list:
 
 print('image_dataset shape:')
 print(image_dataset.shape)
+
+# Splitting the total data into data for training and data for testing randomly with a ratio that was set at the top.
 
 X_train, X_test, y_train, y_test = train_test_split(image_dataset, mask_dataset, test_size = TEST_SIZE, random_state = 0)
 
@@ -195,8 +206,6 @@ def plotsanity(X_train, FOLDER):
     plt.savefig(FOLDER+'plot1.png', dpi=300, bbox_inches='tight')
     plt.close()
 
-#plot a sanity check to see input array
-#plotsanity(X_train, FOLDER)
 
 def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLDER):
     
@@ -216,8 +225,10 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
 
     f = open(FOLDER+"epoch_time.txt", 'w')
     sys.stdout = f
-    #If starting with pre-trained weights.
-    #model.load_weights('mitochondria_gpu_tf1.4.hdf5')    
+
+    #If you want to load a previous model/weights. Use the line below. Note that this needs to be in the same folder.
+	
+    #model.load_weights('model.hdf5')    
 
     history_dice = model.fit(X_train, y_train,
                         batch_size = 32,
@@ -235,8 +246,6 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     loss = history_dice.history['loss']
     val_loss = history_dice.history['val_loss']
     EPOCHS = range(1, len(loss) + 1)
-
-
 
     plt.plot(EPOCHS, loss, '#0080b3', label='Training loss') #green #80b300 pink #e60080 blue #0080b3
     plt.plot(EPOCHS, val_loss, '#e60080', label='Validation loss')
@@ -274,10 +283,7 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
 
     #######################################################################
     #Predict on a few images
-    #model = get_model()
-    #model.load_weights('mitochondria_with_dice_50_plus_50_EPOCHS.hdf5') #Trained for 50 EPOCHS and then additional 100
-    #model.load_weights('mitochondria_gpu_tf1.4.hdf5')  #Trained for 50 EPOCHS
-   
+
     test_img_number = random.randint(0, len(X_test)-1)
     test_img = X_test[test_img_number]
     ground_truth=y_test[test_img_number]
@@ -359,8 +365,3 @@ def get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLD
     nib.save(nifty_img, FOLDER+'prediction.nii') 
 
     f.close()   
-
-#get_model(image_dataset,EPOCHS,X_train,y_train,X_test,y_test,Model_Name,FOLDER)
-
-#tensorboard visualisation- 
-#Hyperparameter optimization to change parameters-
