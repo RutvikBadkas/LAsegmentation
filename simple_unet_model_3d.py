@@ -1,4 +1,5 @@
-# https://youtu.be/BNPW1mYbgS4
+# This file was used to train the model in Bash but is identical to that in the main branch, the only thing that is different is the file paths and hyperparameter configs. 
+
 # u-net model 
 from keras import optimizers
 from keras.models import Model
@@ -6,7 +7,7 @@ from keras import Input
 from keras.layers import Dot, Conv3D, MaxPooling3D, UpSampling3D, concatenate, Conv3DTranspose, BatchNormalization, Dropout, Lambda
 from keras import backend as K
 
-# Dice Coeff: https://towardsdatascience.com/medical-images-segmentation-using-keras-7dc3be5a8524
+# Dice Coeff
 def dice_coef(y_true, y_pred):
     smooth=0.0000001
     y_true_f = K.flatten(y_true)
