@@ -1,5 +1,5 @@
-# using simpleITK load mhd and raw files. lets just use that instead of nrrd files
-# https://stackoverflow.com/questions/37290631/reading-mhd-raw-format-in-python
+# using simpleITK load mhd and raw files. My dataset had mhd/raw hence had to make this function but if your files are .nii or .dicom then you can import super easily with a single line.
+
 import skimage , trimesh
 import SimpleITK as sitk
 import numpy as np
